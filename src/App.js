@@ -1,25 +1,84 @@
-import logo from './logo.svg';
+import { Component } from 'react';
 import './App.css';
+import AddTask from './Task'
+import ToDo from './ToDo'
+import Completed from './Completed'
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+
+class App extends Component{
+  state = {
+    temp: {},
+    todo: [],
+    completed: [],
+  }
+
+  onChange = (event) => {
+    const temp = {...this.setState.temp};
+    temp.task = event.target.value;
+    this.setState({temp});
+  }
+
+  addTask = () => {
+    const temp = {...this.state.temp};
+    const todo = [...this.state.todo];
+    todo.push(temp)
+    this.setState({todo});    
+  }
+
+  addToList = (index) => {
+    const completed = [...this.state.completed];
+    const todo = [...this.state.todo];
+    todo.push(completed[index]);
+    this.setState({todo});
+    completed.splice(index, 1);
+    this.setState({completed});
+  }
+
+  completeTask = (event, index) => {
+    const todo = [...this.state.todo];
+    const completed = [...this.state.completed];
+    completed.push(todo[index]);
+    this.setState(this.state.completed = completed);
+    todo.splice(index, 1)
+    this.setState({todo});
+  }
+
+  removeTask = (index) => {
+    const completed = [...this.state.completed];
+    completed.splice(index, 1);
+    this.setState({completed});
+  }
+
+
+  render() {
+    return (
+      <div className="App">  
+        <AddTask task={this.state.temp.task} onChange = {(event) => this.onChange(event)} addTask={this.addTask}/>
+        <div className="container">
+          <div className='todo'>
+            <h1>ToDo List</h1>
+            {this.state.todo.map((todo, index) => {
+              return <ToDo
+                key={index}
+                task={todo.task}
+                completeTask={(event)=> this.completeTask(event, index)}/>
+            })}
+          </div>
+          <div className='completed'>
+            <h1>Completed</h1>
+            {this.state.completed.map((completed, index) => {
+              return <Completed
+                key={index}
+                task={completed.task}
+                removeTask={() => this.removeTask(index)}
+                addToList={() => this.addToList(index)}/>
+            })}
+          </div>
+        </div>
+      </div>
+    );
+  }
+  
 }
 
 export default App;

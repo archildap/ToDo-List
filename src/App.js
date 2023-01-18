@@ -7,7 +7,7 @@ import Completed from './Completed'
 
 class App extends Component{
   state = {
-    temp: {},
+    temp: {task: ''},
     todo: [],
     completed: [],
   }
@@ -53,7 +53,7 @@ class App extends Component{
   render() {
     return (
       <div className="App">  
-        <AddTask task={this.state.temp.task} onChange = {(event) => this.onChange(event)} addTask={this.addTask}/>
+        <AddTask task={this.state.temp.task} onChange = {this.onChange} addTask={this.addTask} />
         <div className="container">
           <div className='todo'>
             <h1>ToDo List</h1>
@@ -61,7 +61,8 @@ class App extends Component{
               return <ToDo
                 key={index}
                 task={todo.task}
-                completeTask={(event)=> this.completeTask(event, index)}/>
+                completeTask={this.completeTask}
+                index={index} />
             })}
           </div>
           <div className='completed'>
@@ -70,8 +71,9 @@ class App extends Component{
               return <Completed
                 key={index}
                 task={completed.task}
-                removeTask={() => this.removeTask(index)}
-                addToList={() => this.addToList(index)}/>
+                removeTask={this.removeTask}
+                addToList={this.addToList}
+                index={index} />
             })}
           </div>
         </div>

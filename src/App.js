@@ -1,86 +1,103 @@
-import { Component } from 'react';
+import {useState, useCallback, useRef} from 'react';
 import './App.css';
-import AddTask from './Task'
+import Task from './Task'
 import ToDo from './ToDo'
 import Completed from './Completed'
 
 
-class App extends Component{
-  state = {
+function App () {
+
+
+  const [section, setSection] = useState({
     temp: {task: ''},
     todo: [],
     completed: [],
-  }
+  });
 
-  onChange = (event) => {
-    const temp = {...this.setState.temp};
-    temp.task = event.target.value;
-    this.setState({temp});
-  }
-
-  addTask = () => {
-    const temp = {...this.state.temp};
-    const todo = [...this.state.todo];
-    todo.push(temp)
-    this.setState({todo});    
-  }
-
-  addToList = (index) => {
-    const completed = [...this.state.completed];
-    const todo = [...this.state.todo];
-    todo.push(completed[index]);
-    this.setState({todo});
-    completed.splice(index, 1);
-    this.setState({completed});
-  }
-
-  completeTask = (event, index) => {
-    const todo = [...this.state.todo];
-    const completed = [...this.state.completed];
-    completed.push(todo[index]);
-    this.setState(this.state.completed = completed);
-    todo.splice(index, 1)
-    this.setState({todo});
-  }
-
-  removeTask = (index) => {
-    const completed = [...this.state.completed];
-    completed.splice(index, 1);
-    this.setState({completed});
-  }
+  const inputRef = useRef(null);
 
 
-  render() {
+  const onChange = useCallback((event) => { 
+
+    setSection((section) => {
+      section.temp.task = event.target.value;
+      return {...section}
+    });
+  }, [])
+
+  const addTask = useCallback(() => {
+    setSection((section)=> {
+      section.todo.push(section.temp);
+      section.temp = {
+        task: ''
+      }
+      return {...section}
+    });
+    
+
+  }, [])
+
+  const addToList = useCallback((index) => {
+
+    setSection((section) => {
+      section.todo.push(section.completed[index]);
+      section.completed.splice(index, 1);
+
+      return {...section}
+
+    });
+
+  }, []);
+
+  const completeTask = useCallback((index) => {
+
+    setSection((section) => {
+      section.completed.push(section.todo[index]);
+      section.todo.splice(index, 1);
+      return {...section}
+    });
+
+  }, []);
+
+
+  const removeTask = useCallback((index) => {
+
+    setSection((section) => {
+      section.completed.splice(index, 1);
+      return {...section}
+    });
+
+  }, []);
+
+  
     return (
       <div className="App">  
-        <AddTask task={this.state.temp.task} onChange = {this.onChange} addTask={this.addTask} />
+        <Task task = {section.temp.task} onChange = {onChange} addTask = {addTask} />
         <div className="container">
           <div className='todo'>
             <h1>ToDo List</h1>
-            {this.state.todo.map((todo, index) => {
+            {section.todo.map((todo, index) => {
               return <ToDo
                 key={index}
                 task={todo.task}
-                completeTask={this.completeTask}
+                completeTask={completeTask}
                 index={index} />
             })}
           </div>
           <div className='completed'>
             <h1>Completed</h1>
-            {this.state.completed.map((completed, index) => {
+            {section.completed.map((completed, index) => {
               return <Completed
                 key={index}
                 task={completed.task}
-                removeTask={this.removeTask}
-                addToList={this.addToList}
+                removeTask={removeTask}
+                addToList={addToList}
                 index={index} />
             })}
           </div>
         </div>
       </div>
-    );
-  }
-  
+    );  
 }
 
 export default App;

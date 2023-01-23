@@ -27,11 +27,16 @@ function App () {
 
   const addTask = useCallback(() => {
     setSection((section)=> {
-      section.todo.push(section.temp);
-      section.temp = {
-        task: ''
+      if (section.temp.task !== '') {
+        section.todo.push(section.temp);
+        section.temp = {
+          task: ''
+        }
+        return {...section}
+      } else {
+        return {...section}
       }
-      return {...section}
+      
     });
     
 
